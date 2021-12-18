@@ -15,24 +15,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TabLayoutTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
-                    Greeting("Android")
-                }
+                TabScreen()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun TabScreen() {
+
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    TabLayoutTheme {
-        Greeting("Android")
-    }
+    TabScreen()
 }
