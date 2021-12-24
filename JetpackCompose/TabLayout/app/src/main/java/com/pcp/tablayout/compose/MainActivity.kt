@@ -1,14 +1,17 @@
 package com.pcp.tablayout.compose
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,21 +40,32 @@ class MainActivity : ComponentActivity() {
 @ExperimentalPagerApi
 @Composable
 fun TabScreen() {
+    //var listDetail = mutableListOf("none")    //這個不行,沒有重繪時記錄的問題
+    //var listDetail = remember { mutableListOf("none") } //不行
+    val listDetail = remember { mutableStateListOf<String>("none") }
+
     val pagerState = rememberPagerState(pageCount = 3)  //可學: PagerState.kt
+    Log.v("TAG", "Print screen")
     Column(
         modifier = Modifier.background(Color.White)
     ) {
         Tabs(pagerState = pagerState)
-        TabsContent(pagerState = pagerState)
+        TabsContent(pagerState = pagerState, listDetail
+        ) { newName ->
+            listDetail.add(newName)
+        }
     }
 }
 
 @ExperimentalPagerApi   //因為 PagerState 需要
 @Composable
-fun TabsContent(pagerState: PagerState) {
+fun TabsContent(pagerState: PagerState
+                , info: List<String>
+                , infoUpdate: (newInfo: String) -> Unit) {
     HorizontalPager(state = pagerState) { page ->   //Pager.kt
+        infoUpdate( System.currentTimeMillis().toString())
         when(page) {
-            0 -> TabScreenOne(data = "Make It Easy One")
+            0 -> TabScreenOne(data = "Make It Easy One", info)
             1 -> TabScreenTwo(data = "Make It Easy Two")
             2 -> TabScreenThree(data = "Make It Easy Three")
         }
