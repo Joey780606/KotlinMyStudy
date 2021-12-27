@@ -1,5 +1,7 @@
 package com.pcp.tablayout.compose
 
+import android.graphics.Paint
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,6 +11,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -20,6 +23,7 @@ fun TabScreenOne(data : String, info : List<String>) {
     val buttonString = remember {
         mutableStateListOf("Start scan probe", "Connect probe", "Write\nmodel number\nproduction date", "Read\nmodel number\nproduction date", "Get rssi", "Set filter rssi value")
     }
+    val openDialog = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -28,7 +32,9 @@ fun TabScreenOne(data : String, info : List<String>) {
         verticalArrangement = Arrangement.Top
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.4f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.4f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -40,6 +46,9 @@ fun TabScreenOne(data : String, info : List<String>) {
                         when (rowId) {
                             0 -> if (buttonString[0] == "Start scan probe")
                                 buttonString[0] = "Stop scan probe"
+                            2 -> {
+                                openDialog.value = true
+                            }
                         }
                     }
                 }
@@ -73,6 +82,10 @@ fun TabScreenOne(data : String, info : List<String>) {
             }
         }
     }
+
+    if(openDialog.value) {
+        writeDialog(openDialog)  //重要,直接帶 mutableStateOf 的值過去到Dialog,這樣Dialog關掉時,直接改此值就可以修改此時並重繪UI了
+    }
 }
 
 @Composable
@@ -81,13 +94,17 @@ fun rowShow(info: List<String>, number: Int, textUpdate: (stringId: Int) -> Unit
         modifier = Modifier.fillMaxWidth(), //使用上層的最大寬度
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        Button(modifier = Modifier.weight(0.5f)
+        Button(modifier = Modifier
+            .weight(0.5f)
             .padding(5.dp),
-            onClick = { textUpdate(number - 1) }) {
+            onClick = {
+                textUpdate(number - 1)
+            }) {
             Text(info[number - 1],
                 textAlign = TextAlign.Center)
         }
-        Button(modifier = Modifier.weight(0.5f)
+        Button(modifier = Modifier
+            .weight(0.5f)
             .padding(5.dp),
             onClick = { textUpdate(number) }) {
             Text(info[number],
@@ -167,3 +184,43 @@ fun TabScreenThree(data : String) {
         )
     }
 }
+
+@Composable
+fun writeDialog(dialogOpen: MutableState<Boolean>) {
+    MaterialTheme {
+        Column{
+            val showDialog = remember { mutableStateOf(true) }
+            val modelNumber = remember { mutableStateOf("") }
+            val productionDate = remember { mutableStateOf("") }
+            val saveValue = remember { mutableStateOf(false) }
+
+            if (showDialog.value) {
+                AlertDialog(
+                    onDismissRequest = {
+                        showDialog.value = false
+                        dialogOpen.value = false
+                    },
+                    title = {
+                        Text(text = "Joey test")
+                    },
+                    text = {
+                        Text(text = "Test alertDialog create and dismiss")
+                    },
+                    buttons = {
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.CenterHorizontally),
+                            onClick = {
+                                showDialog.value = false
+                                dialogOpen.value = false
+                            }) {
+                            Text("Dismiss")
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+

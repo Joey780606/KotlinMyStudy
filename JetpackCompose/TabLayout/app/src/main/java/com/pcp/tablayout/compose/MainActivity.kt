@@ -35,6 +35,11 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        Log.v("TAG", "onResume")
+    }
 }
 
 @ExperimentalPagerApi
