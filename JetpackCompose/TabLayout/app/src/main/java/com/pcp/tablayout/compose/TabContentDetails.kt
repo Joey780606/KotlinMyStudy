@@ -25,6 +25,10 @@ fun TabScreenOne(data : String, info : List<String>) {
     }
     val openDialog = remember { mutableStateOf(false) }
 
+    val modelNumber = remember { mutableStateOf("") }
+    val productionDate = remember { mutableStateOf("") }
+    val saveValue = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         //modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f),
@@ -84,7 +88,7 @@ fun TabScreenOne(data : String, info : List<String>) {
     }
 
     if(openDialog.value) {
-        writeDialog(openDialog)  //重要,直接帶 mutableStateOf 的值過去到Dialog,這樣Dialog關掉時,直接改此值就可以修改此時並重繪UI了
+        writeDialog(openDialog, modelNumber, productionDate, saveValue)  //重要,直接帶 mutableStateOf 的值過去到Dialog,這樣Dialog關掉時,直接改此值就可以修改此時並重繪UI了
     }
 }
 
@@ -186,14 +190,14 @@ fun TabScreenThree(data : String) {
 }
 
 @Composable
-fun writeDialog(dialogOpen: MutableState<Boolean>) {
+fun writeDialog(dialogOpen: MutableState<Boolean>, varModelNumber: MutableState<String>, varProductionDate: MutableState<String>, varSaveValue: MutableState<Boolean>) {
     MaterialTheme {
         Column{
             val showDialog = remember { mutableStateOf(true) }
-            val modelNumber = remember { mutableStateOf("") }
-            val productionDate = remember { mutableStateOf("") }
-            val saveValue = remember { mutableStateOf(false) }
-
+            if(!varSaveValue.value) {
+                varModelNumber.value = ""
+                varProductionDate.value = ""
+            }
             if (showDialog.value) {
                 AlertDialog(
                     onDismissRequest = {
@@ -201,21 +205,61 @@ fun writeDialog(dialogOpen: MutableState<Boolean>) {
                         dialogOpen.value = false
                     },
                     title = {
-                        Text(text = "Joey test")
+                        Text(modifier = Modifier.fillMaxWidth()
+                            .align(Alignment.CenterHorizontally),
+                            text = "Model number: ")
                     },
                     text = {
-                        Text(text = "Test alertDialog create and dismiss")
+                        Column() {
+                            TextField(
+                                value = varModelNumber.value,
+                                onValueChange = { updateInfo ->
+                                    varModelNumber.value = updateInfo
+                                    //if(saveValue.value)
+                                    //    storeModelNumber.value = updateInfo
+                                }
+                            )
+                            Text(modifier = Modifier.fillMaxWidth()
+                                .align(Alignment.CenterHorizontally),
+                                text = "Production date: ")
+                            TextField(
+                                value = varProductionDate.value,
+                                onValueChange = { updateInfo ->
+                                    //if(saveValue.value)
+                                    varProductionDate.value = updateInfo }
+                            )
+                            Row() {
+                                Checkbox(
+                                    checked = varSaveValue.value,
+                                    onCheckedChange = { varSaveValue.value = it }
+                                )
+                                Text(text = "Save it")
+                            }
+                        }
                     },
                     buttons = {
-                        Button(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.CenterHorizontally),
-                            onClick = {
-                                showDialog.value = false
-                                dialogOpen.value = false
-                            }) {
-                            Text("Dismiss")
+                        Row() {
+                            Button(
+                                modifier = Modifier
+                                    .weight(0.5f),
+                                onClick = {
+                                    showDialog.value = false
+                                    dialogOpen.value = false
+                                })
+                            {
+                                    Text("OK")
+                            }
+
+                            Button(
+                                modifier = Modifier
+                                    .weight(0.5f),
+                                onClick = {
+                                    showDialog.value = false
+                                    dialogOpen.value = false
+                                })
+                            {
+                                    Text("Cancel")
+                            }
                         }
                     }
                 )
