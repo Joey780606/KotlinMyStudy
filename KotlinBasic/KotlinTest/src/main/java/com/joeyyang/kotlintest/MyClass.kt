@@ -11,6 +11,8 @@ package com.joeyyang.kotlintest
     4. What's new in Kotlin
      a. Kotlin 1.6.0: 有一些,但比較深,晚點研究
     5. Basic syntax [Basic syntax說明]
+    研究到 https://kotlinlang.org/docs/basic-syntax.html#nullable-values-and-null-checks
+    Using lambda expressions to filter and map collections:
  */
 
 const val F001_FUNCTION_BODY_EXPRESSION = 1
@@ -18,7 +20,7 @@ const val F002_IF_EXPRESSION_01 = 2
 const val F003_LOOP_EXPRESSION_01 = 3
 const val F004_IN_EXPRESSION_01 = 4
 fun main() {
-    var testNumber = F003_LOOP_EXPRESSION_01
+    var testNumber = F004_IN_EXPRESSION_01
 
     when(testNumber) {
         F001_FUNCTION_BODY_EXPRESSION -> funBodyExpression()
@@ -34,13 +36,30 @@ fun funIn001() {
     val x = 10
     val y = 9
 
-    val list = listOf("a", "b", "c")
+    val list = listOf("a", "b", "c") //listOf可點開看原始code
     if(x in 1..y+1)
         println("fits in range")
 
     if(-1 !in 0..list.lastIndex)
         println("-1 is out of range")
 
+    if(list.size !in list.indices)
+        println("list size is out of valid list indices range, too")
+
+    for(x in 1..10 step 2)
+        print(x)
+    println()
+    for(x in 9 downTo 0 step 3)
+        print(x)
+
+    for(item in list)
+        println(item)
+
+    val items = setOf("apple", "banana", "kiwifruit")
+    when {
+        "orange" in items -> println("juicy")
+        "apple" in items -> println("apple is fine too")
+    }
 }
 
 fun funLoop001() {
