@@ -10,7 +10,7 @@ package com.joeyyang.kotlintest
      a. Kotlin Multiplatform: OK, none
     4. What's new in Kotlin
      a. Kotlin 1.6.0: 有一些,但比較深,晚點研究
-    5. Basic syntax [Basic syntax說明]
+    5. Basic syntax [Basic syntax說明] (範例ready)
     研究到 https://kotlinlang.org/docs/basic-syntax.html#nullable-values-and-null-checks
     Using lambda expressions to filter and map collections:
  */
@@ -19,17 +19,77 @@ const val F001_FUNCTION_BODY_EXPRESSION = 1
 const val F002_IF_EXPRESSION_01 = 2
 const val F003_LOOP_EXPRESSION_01 = 3
 const val F004_IN_EXPRESSION_01 = 4
+const val F005_COLLECTIONS_EXPRESSION_01 = 5
+const val F006_NULLABLE_EXPRESSION_01 = 6
+const val F007_IS_EXPRESSION_01 = 7
+
 fun main() {
-    var testNumber = F004_IN_EXPRESSION_01
+    var testNumber = F007_IS_EXPRESSION_01
 
     when(testNumber) {
         F001_FUNCTION_BODY_EXPRESSION -> funBodyExpression()
         F002_IF_EXPRESSION_01 -> funIf001()
         F003_LOOP_EXPRESSION_01 -> funLoop001()
         F004_IN_EXPRESSION_01 -> funIn001()
+        F005_COLLECTIONS_EXPRESSION_01 -> funCollection001()
+        F006_NULLABLE_EXPRESSION_01 -> funNullable001()
+        F007_IS_EXPRESSION_01 -> funIs001()
         else -> print("None")
     }
     print("Hello world!")
+}
+
+fun funIs001() {
+    fun printLength(obj: Any) { //重要, function裡還有function
+        println("Getting the length of '$obj'. Result: ${getStringLengthCase7(obj)}")
+    }
+    printLength("Incomprehensibilities")
+    printLength(1000)
+    printLength(listOf(Any()))  //重要
+}
+
+fun getStringLengthCase7(obj: Any): Int? {  //重要,回傳值可以是null,所以要用 ?
+    /* //寫法1
+    if(obj is String) {
+        return obj.length
+    }
+    return null
+     */
+
+    //寫法2
+    if(obj !is String) return null
+
+    return obj.length
+}
+
+fun funNullable001() {
+    printProduct("6", "7")
+    printProduct("a", "7")
+    printProduct("6", "b")
+}
+
+fun parseIntCase6(str: String): Int? {
+    return str.toIntOrNull()    //重要
+}
+
+fun printProduct(arg1: String, arg2: String) {
+    val x = parseIntCase6(arg1)
+    val y = parseIntCase6(arg2)
+
+    if(x != null && y != null) {
+        println(x * y)
+    } else {
+        println("'$arg1' or '$arg2' is not a number")   //重要
+    }
+}
+
+fun funCollection001() {
+    val fruits = listOf("banana", "avocado", "apple", "kiwifruit")
+    fruits
+        .filter { it.startsWith("a") }
+        .sortedBy { it }
+        .map { it.uppercase() }
+        .forEach { println(it) }
 }
 
 fun funIn001() {
